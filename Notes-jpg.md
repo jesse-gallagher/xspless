@@ -7,4 +7,5 @@
 	- use RequestParameters to add a UrlProcessor that converts resource requests for .less files to go through an XSP servlet
 	- Find out if the resource aggregator for CSS ("/db.nsf/xsp/.ibmmodres/.css") can be extended/modified to work with LESS
 - Alternatively: possible to intercept and rejigger StyleSheetResource components before render response to point to a processing servlet? Not sure when the aggregator comes into play
+- Another alternative: decide that LESS resources must go through with URLs like /.ibmxspres/xspless. Does the ResourceProvider work inside an individual DB as well, or just at the server level?
 - If not hooking into standard minifier, servlet could act as its own for LESS files
