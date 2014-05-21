@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><note class="form" maintenanceversion="1.1" replicaid="85257CDF00547205" version="9.0" xmlns="http://www.lotus.com/dxl">
+<noteinfo noteid="466" sequence="2" unid="30350B583C8D0A4F85257CDF0055F761">
+<created><datetime dst="true">20140521T113858,89-04</datetime></created>
+<modified><datetime dst="true">20140521T113859,05-04</datetime></modified>
+<revised><datetime dst="true">20140521T113859,03-04</datetime></revised>
+<lastaccessed><datetime dst="true">20140521T113859,04-04</datetime></lastaccessed>
+<addedtofile><datetime dst="true">20140521T113858,89-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Jesse Gallagher/O=IKSG</name></updatedby>
+<wassignedby><name>CN=Jesse Gallagher/O=IKSG</name></wassignedby>
+<item name="$Flags"><text>34567Cg~[</text></item>
+<item name="$TITLE"><text>META-INF/less-rhino-1.7.0.js</text></item>
+<item name="$DesignerVersion"><text>8.5.3</text></item>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<item name="$FileNames" sign="true"><text>META-INF/less-rhino-1.7.0.js</text></item></note>

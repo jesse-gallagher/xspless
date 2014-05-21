@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><note class="form" maintenanceversion="1.1" replicaid="85257CDF00547205" version="9.0" xmlns="http://www.lotus.com/dxl">
+<noteinfo noteid="452" sequence="13" unid="27208E00487EF12B85257CDF0055B29B">
+<created><datetime dst="true">20140521T113602,83-04</datetime></created>
+<modified><datetime dst="true">20140521T113940,81-04</datetime></modified>
+<revised><datetime dst="true">20140521T113940,80-04</datetime></revised>
+<lastaccessed><datetime dst="true">20140521T113940,80-04</datetime></lastaccessed>
+<addedtofile><datetime dst="true">20140521T113602,83-04</datetime></addedtofile></noteinfo>
+<updatedby><name>CN=Jesse Gallagher/O=IKSG</name></updatedby>
+<wassignedby><name>CN=Jesse Gallagher/O=IKSG</name></wassignedby>
+<item name="$Flags"><text>34567Cg~[</text></item>
+<item name="$TITLE"><text>servlet/LessTest.java</text></item>
+
+<item name="$DesignerVersion"><text>8.5.3</text></item>
+
+
+<item name="$FileNames" sign="true"><text>servlet/LessTest.java</text></item>
+
+</note>
