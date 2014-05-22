@@ -1,5 +1,8 @@
 package frostillicus.xspless;
 
+import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
@@ -16,11 +19,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.lesscss.LessCompiler;
 import org.openntf.domino.Database;
+import org.openntf.domino.Document;
+import org.openntf.domino.DxlExporter;
+import org.openntf.domino.Form;
 import org.openntf.domino.Session;
-import org.openntf.domino.design.DatabaseDesign;
-import org.openntf.domino.design.StyleSheet;
+import org.openntf.domino.design.cd.CDResourceFile;
 import org.openntf.domino.types.FactorySchema;
 import org.openntf.domino.utils.Factory;
+import org.openntf.domino.utils.xml.XMLDocument;
+import org.openntf.domino.utils.xml.XMLNode;
 
 import com.ibm.domino.osgi.core.context.ContextInfo;
 
@@ -58,32 +65,50 @@ public class LessServlet extends HttpServlet {
 			//			out.println("I was called to process " + Arrays.asList(pathBits) + " within " + database.getFilePath());
 			//			out.println("Context path is " + req.getContextPath());
 
-			DatabaseDesign design = database.getDesign();
-			StyleSheet ss = design.getStyleSheet(pathBits[1].replace("/", "\\"));
-			Date lastModified = ss.getDocument().getLastModifiedDate();
+			//			System.out.println("want to resolve " + database.getNotesURL() + "/" + pathBits[1]);
+			String dbUrl = database.getNotesURL();
+			Form formObj = (Form) session.resolve(dbUrl.substring(0, dbUrl.indexOf("?")) + "/" + pathBits[1]);
+			if (formObj != null) {
+				Document doc = formObj.getDocument();
+				Date lastModified = doc.getLastModifiedDate();
 
-			if (!cache_.containsKey(cacheKey) || (lastModified.after(cacheModified_.get(cacheKey)))) {
-				// URL url = new URL("xspnsf://server:0" + req.getContextPath() +
-				// req.getPathInfo());
-				// out.println("URL is " + url);
-				// InputStream is = url.openStream();
-				// String content = StreamUtil.readString(is);
-				// is.close();
-				String content = new String(ss.getFileData(), "UTF-8");
-				//			out.println("content:\n");
-				//			out.println(content);
+				if (!cache_.containsKey(cacheKey) || (lastModified.after(cacheModified_.get(cacheKey)))) {
+					// Now get the raw item data
+					DxlExporter exporter = session.createDxlExporter();
+					exporter.setForceNoteFormat(true);
+					XMLDocument xml = new XMLDocument();
+					xml.loadString(exporter.exportDxl(doc));
+					ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+					for (XMLNode rawitemdata : xml.selectNodes("//item[@name='$FileData']/rawitemdata")) {
+						String rawData = rawitemdata.getText();
+						byte[] thisData = parseBase64Binary(rawData);
+						byteStream.write(thisData);
+					}
+					byte[] data = byteStream.toByteArray();
+					CDResourceFile resourceFile = new CDResourceFile(data);
 
-				cache_.put(cacheKey, lessCompiler_.compile(content));
-				cacheModified_.put(cacheKey, new Date());
+					// URL url = new URL("xspnsf://server:0" + req.getContextPath() +
+					// req.getPathInfo());
+					// out.println("URL is " + url);
+					// InputStream is = url.openStream();
+					// String content = StreamUtil.readString(is);
+					// is.close();
+					String content = new String(resourceFile.getData(), "UTF-8");
+					//			out.println("content:\n");
+					//			out.println(content);
+
+					cache_.put(cacheKey, lessCompiler_.compile(content));
+					cacheModified_.put(cacheKey, new Date());
+				}
+				String css = cache_.get(cacheKey);
+				res.setContentType("text/css");
+				res.setContentLength(css.length());
+				out.print(css);
 			}
-			String css = cache_.get(cacheKey);
-			res.setContentType("text/css");
-			res.setContentLength(css.length());
-			out.print(css);
 
 			// URL resource = extContext.getResource("/" + fileName);
 			// out.println("That resource's URL is " + resource);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace(new PrintStream(out));
 		} finally {
 			out.close();
