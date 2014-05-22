@@ -5,6 +5,7 @@ import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,7 +68,7 @@ public class LessServlet extends HttpServlet {
 
 			//			System.out.println("want to resolve " + database.getNotesURL() + "/" + pathBits[1]);
 			String dbUrl = database.getNotesURL();
-			Form formObj = (Form) session.resolve(dbUrl.substring(0, dbUrl.indexOf("?")) + "/" + pathBits[1]);
+			Form formObj = (Form) session.resolve(dbUrl.substring(0, dbUrl.indexOf("?")) + "/" + URLEncoder.encode(pathBits[1], "UTF-8"));
 			if (formObj != null) {
 				Document doc = formObj.getDocument();
 				Date lastModified = doc.getLastModifiedDate();
