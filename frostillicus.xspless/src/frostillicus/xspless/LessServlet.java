@@ -35,7 +35,6 @@ import com.ibm.domino.osgi.core.context.ContextInfo;
 public class LessServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	//	private int callCount = 0;
 	private LessCompiler lessCompiler_ = new LessCompiler();
 	private Map<String, String> cache_ = new ConcurrentHashMap<String, String>();
 	private Map<String, Date> cacheModified_ = new ConcurrentHashMap<String, Date>();
@@ -55,18 +54,11 @@ public class LessServlet extends HttpServlet {
 		try {
 			// TODO See if there's a way to get the xspnsf URL route to work without
 			// throwing a NotesContext-not-initialized exception
-			// TODO Fix cache to check for modifications
+			// xspnsf://server:0/tests/res.nsf/foo.less
 
 			String cacheKey = req.getContextPath() + req.getPathInfo();
 
-			// xspnsf://server:0/tests/res.nsf/foo.less
 			String[] pathBits = req.getPathInfo().split("/", 2);
-			// String fileName = pathBits[3];
-			//			out.println("Call count: " + ++callCount);
-			//			out.println("I was called to process " + Arrays.asList(pathBits) + " within " + database.getFilePath());
-			//			out.println("Context path is " + req.getContextPath());
-
-			//			System.out.println("want to resolve " + database.getNotesURL() + "/" + pathBits[1]);
 			String dbUrl = database.getNotesURL();
 			Form formObj = (Form) session.resolve(dbUrl.substring(0, dbUrl.indexOf("?")) + "/" + URLEncoder.encode(pathBits[1], "UTF-8"));
 			if (formObj != null) {
@@ -88,15 +80,7 @@ public class LessServlet extends HttpServlet {
 					byte[] data = byteStream.toByteArray();
 					CDResourceFile resourceFile = new CDResourceFile(data);
 
-					// URL url = new URL("xspnsf://server:0" + req.getContextPath() +
-					// req.getPathInfo());
-					// out.println("URL is " + url);
-					// InputStream is = url.openStream();
-					// String content = StreamUtil.readString(is);
-					// is.close();
 					String content = new String(resourceFile.getData(), "UTF-8");
-					//			out.println("content:\n");
-					//			out.println(content);
 
 					cache_.put(cacheKey, lessCompiler_.compile(content));
 					cacheModified_.put(cacheKey, new Date());
@@ -106,9 +90,6 @@ public class LessServlet extends HttpServlet {
 				res.setContentLength(css.length());
 				out.print(css);
 			}
-
-			// URL resource = extContext.getResource("/" + fileName);
-			// out.println("That resource's URL is " + resource);
 		} catch (Throwable e) {
 			e.printStackTrace(new PrintStream(out));
 		} finally {
