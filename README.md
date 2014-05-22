@@ -5,7 +5,7 @@ LESS CSS Plugin for XPages
 
 This takes the form (currently, at least) of a servlet aliased to "/xspless" within an NSF (behavior outside of an NSF is not handled). By specifying a path to a LESS file in the NSF as "/xspless/file.less" (can be a Stylesheet, File Resource, or stored in WebContent), the servlet will automatically compile the LESS file to standard CSS to serve to the browser.
 
-Note: this does not currently work with resource aggregation. If using aggregation, it is important to not include the LESS file with a normal <xp:styleSheet/> resource, but instead use <xp:linkResource/>.
+Note: this does not currently work with resource aggregation. If using aggregation, it is important to not include the LESS file with a normal xp:styleSheet resource, but instead use xp:linkResource.
 
 TODO
 ====
