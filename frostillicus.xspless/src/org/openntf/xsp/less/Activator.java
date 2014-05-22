@@ -1,4 +1,4 @@
-package frostillicus.xspless;
+package org.openntf.xsp.less;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

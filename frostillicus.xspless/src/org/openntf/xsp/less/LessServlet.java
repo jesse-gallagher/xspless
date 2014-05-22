@@ -1,4 +1,4 @@
-package frostillicus.xspless;
+package org.openntf.xsp.less;
 
 import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
 

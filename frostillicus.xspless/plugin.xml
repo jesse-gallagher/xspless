@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
 	<extension point="org.eclipse.equinox.http.registry.servlets" name="xspless">
-		<servlet alias="/xspless" class="frostillicus.xspless.LessServlet" load-on-startup="true"/>
+		<servlet alias="/xspless" class="org.openntf.xsp.less.LessServlet" load-on-startup="true"/>
 	</extension>
 
 </plugin>
