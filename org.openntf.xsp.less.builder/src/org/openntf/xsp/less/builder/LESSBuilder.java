@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -16,8 +18,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.lesscss.LessCompiler;
 
 import com.ibm.commons.util.io.StreamUtil;
@@ -26,6 +26,7 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 
 	public static final String BUILDER_ID = "org.openntf.xsp.less.builder.lessBuilder";
 	private static final String MARKER_TYPE = "org.openntf.xsp.less.builder.lessProblem";
+	private static Pattern ERROR_LINE_PATTERN = Pattern.compile(".*on line (\\d+), column (\\d+):.*");
 
 	private LessCompiler lessCompiler_ = new LessCompiler();
 
@@ -45,18 +46,14 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 		return null;
 	}
 
-	@SuppressWarnings("unused")
-	private void addMarker(IFile file, String message, int lineNumber, int severity) {
-		try {
-			IMarker marker = file.createMarker(MARKER_TYPE);
-			marker.setAttribute(IMarker.MESSAGE, message);
-			marker.setAttribute(IMarker.SEVERITY, severity);
-			if (lineNumber == -1) {
-				lineNumber = 1;
-			}
-			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-		} catch (CoreException e) {
+	private void addMarker(IFile file, String message, int lineNumber, int severity) throws CoreException {
+		IMarker marker = file.createMarker(MARKER_TYPE);
+		marker.setAttribute(IMarker.MESSAGE, message);
+		marker.setAttribute(IMarker.SEVERITY, severity);
+		if (lineNumber == -1) {
+			lineNumber = 1;
 		}
+		marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 	}
 
 	class LESSDeltaVisitor implements IResourceDeltaVisitor {
@@ -92,12 +89,8 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	private void deleteMarkers(IFile file) {
-		try {
-			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
-		} catch (CoreException ce) {
-			ce.printStackTrace();
-		}
+	private void deleteMarkers(IFile file) throws CoreException {
+		file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
 	}
 
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
@@ -109,18 +102,28 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 	}
 
 	void processLESSFile(IResource resource) throws CoreException {
-		if (resource instanceof IFile && resource.getName().endsWith(".less")) {
+		String resourceName = resource.getName();
+		if (resource instanceof IFile && (resourceName.endsWith(".less") || resourceName.endsWith(".less.css"))) {
+
 			try {
 				IFile lessFile = (IFile) resource;
-				System.out.println("Added/Modified LESS file " + lessFile.getProjectRelativePath());
+				//				System.out.println("Added/Modified LESS file " + lessFile.getProjectRelativePath());
 				deleteMarkers(lessFile);
 
 				InputStream is = lessFile.getContents();
 				String lessCode = StreamUtil.readString(is);
 				is.close();
 
-				String result = lessCompiler_.compile(lessCode);
-				IFile workspaceBuildFile = ((IFolder) lessFile.getParent()).getFile(lessFile.getName() + ".css");
+				String result;
+				synchronized (lessCompiler_) {
+					result = lessCompiler_.compile(lessCode);
+				}
+
+				// Ending with .less.css = Domino Stylesheet resource
+				// Ending with just .less = normal LESS file
+				String resultName = resourceName.endsWith(".less.css") ? (resourceName.substring(0, resourceName.lastIndexOf(".less.css")) + ".css") : (resourceName + ".css");
+
+				IFile workspaceBuildFile = ((IFolder) lessFile.getParent()).getFile(resultName);
 				ByteArrayInputStream bytes = new ByteArrayInputStream(result.getBytes());
 
 				if (!workspaceBuildFile.exists()) {
@@ -130,10 +133,20 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 					workspaceBuildFile.setLocalTimeStamp(Calendar.getInstance().getTimeInMillis());
 				}
 
-				System.out.println("Created/Modified file " + workspaceBuildFile.getProjectRelativePath());
+				//				System.out.println("Created/Modified file " + workspaceBuildFile.getProjectRelativePath());
 			} catch (Exception e) {
-				e.printStackTrace();
-				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Exception during LESS file processing", e));
+				//				e.printStackTrace();
+
+				String message = e.getMessage();
+				Matcher errorMatcher = ERROR_LINE_PATTERN.matcher(message);
+				if (errorMatcher.matches()) {
+					System.out.println("Adding marker for line " + errorMatcher.group(1));
+					addMarker((IFile) resource, "Exception during LESS file processing: " + e.getMessage(), Integer.parseInt(errorMatcher.group(1)), IMarker.SEVERITY_ERROR);
+				} else {
+					System.out.println("Adding marker for unknown line");
+					System.out.println("Message was " + message);
+					addMarker((IFile) resource, "Exception during LESS file processing: " + e.getMessage(), -1, IMarker.SEVERITY_ERROR);
+				}
 			}
 		}
 	}

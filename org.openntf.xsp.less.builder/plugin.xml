@@ -26,4 +26,8 @@
 				id="org.openntf.xsp.less.builder.addRemoveNatureAction"/>
 		</objectContribution>
 	</extension>
+	<extension id="lessProblem" name="LESS CSS Problem" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.problemmarker"/>
+		<persistent value="true"/>
+	</extension>
 </plugin>
