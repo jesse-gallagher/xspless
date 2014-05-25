@@ -26,7 +26,7 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 
 	public static final String BUILDER_ID = "org.openntf.xsp.less.builder.lessBuilder";
 	private static final String MARKER_TYPE = "org.openntf.xsp.less.builder.lessProblem";
-	private static Pattern ERROR_LINE_PATTERN = Pattern.compile(".*on line (\\d+), column (\\d+):.*");
+	private static Pattern ERROR_LINE_PATTERN = Pattern.compile("^.*on line (\\d+), column (\\d+).*$", Pattern.MULTILINE | Pattern.DOTALL);
 
 	private LessCompiler lessCompiler_ = new LessCompiler();
 
