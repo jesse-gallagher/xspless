@@ -30,6 +30,10 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 
 	private LessCompiler lessCompiler_ = new LessCompiler();
 
+	public LESSBuilder() {
+		lessCompiler_.setCompress(true);
+	}
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
@@ -103,7 +107,8 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 
 	void processLESSFile(IResource resource) throws CoreException {
 		String resourceName = resource.getName();
-		if (resource instanceof IFile && (resourceName.endsWith(".less") || resourceName.endsWith(".less.css"))) {
+		String nameLcase = resourceName.toLowerCase();
+		if (resource instanceof IFile && (nameLcase.endsWith(".less") || nameLcase.endsWith(".less.css"))) {
 
 			try {
 				IFile lessFile = (IFile) resource;
@@ -121,7 +126,8 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 
 				// Ending with .less.css = Domino Stylesheet resource
 				// Ending with just .less = normal LESS file
-				String resultName = resourceName.endsWith(".less.css") ? (resourceName.substring(0, resourceName.lastIndexOf(".less.css")) + ".css") : (resourceName + ".css");
+				String resultName = resourceName.endsWith(".less.css") ? (resourceName.substring(0, nameLcase.lastIndexOf(".less.css")) + ".css") : (resourceName.substring(0,
+						nameLcase.lastIndexOf(".less")) + ".css");
 
 				IFile workspaceBuildFile = ((IFolder) lessFile.getParent()).getFile(resultName);
 				ByteArrayInputStream bytes = new ByteArrayInputStream(result.getBytes());
@@ -140,11 +146,11 @@ public class LESSBuilder extends IncrementalProjectBuilder {
 				String message = e.getMessage();
 				Matcher errorMatcher = ERROR_LINE_PATTERN.matcher(message);
 				if (errorMatcher.matches()) {
-					System.out.println("Adding marker for line " + errorMatcher.group(1));
+					//					System.out.println("Adding marker for line " + errorMatcher.group(1));
 					addMarker((IFile) resource, "Exception during LESS file processing: " + e.getMessage(), Integer.parseInt(errorMatcher.group(1)), IMarker.SEVERITY_ERROR);
 				} else {
-					System.out.println("Adding marker for unknown line");
-					System.out.println("Message was " + message);
+					//					System.out.println("Adding marker for unknown line");
+					//					System.out.println("Message was " + message);
 					addMarker((IFile) resource, "Exception during LESS file processing: " + e.getMessage(), -1, IMarker.SEVERITY_ERROR);
 				}
 			}
