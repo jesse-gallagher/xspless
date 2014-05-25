@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: LESS CSS Builder for Domino Designer
+Bundle-SymbolicName: org.openntf.xsp.less.builder;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.openntf.xsp.less.builder.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Import-Package: com.ibm.commons.util.io
+Bundle-ClassPath: lib/commons-io-2.4.jar,
+ lib/js.jar,
+ lib/slf4j-api-1.7.7.jar,
+ lib/slf4j-simple-1.7.7.jar,
+ .

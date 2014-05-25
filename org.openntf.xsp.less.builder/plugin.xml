@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension id="lessBuilder" name="LESS CSS Project Builder" point="org.eclipse.core.resources.builders">
+		<builder hasNature="true">
+      		<run class="org.openntf.xsp.less.builder.LESSBuilder"/>
+		</builder>
+	</extension>
+	<extension id="lessBuilderNature" name="LESS CSS Project Nature" point="org.eclipse.core.resources.natures">
+		<runtime>
+			<run class="org.openntf.xsp.less.builder.LESSBuilderNature"/>
+		</runtime>
+		<builder id="org.openntf.xsp.less.builder.lessBuilder"/>
+	</extension>
+	<extension point="org.eclipse.ui.popupMenus">
+		<objectContribution
+			adaptable="true"
+			objectClass="org.eclipse.core.resources.IProject"
+			nameFilter="*"
+			id="org.openntf.xsp.less.builder.contribution1">
+			<action
+				label="Add/Remove LESS CSS Nature"
+				class="org.openntf.xsp.less.builder.ToggleNatureAction"
+				menubarPath="additions"
+				enablesFor="+"
+				id="org.openntf.xsp.less.builder.addRemoveNatureAction"/>
+		</objectContribution>
+	</extension>
+</plugin>

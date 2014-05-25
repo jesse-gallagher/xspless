@@ -8,8 +8,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.ibm.designer.runtime,
  com.ibm.domino.osgi.core.context,
  com.ibm.xsp.webapp,
- javax.servlet;version="2.5.0",
- javax.servlet.http;version="2.5.0",
+ javax.servlet,
+ javax.servlet.http,
  lotus.domino,
  org.openntf.domino,
  org.openntf.domino.design,
@@ -17,12 +17,11 @@ Import-Package: com.ibm.designer.runtime,
  org.openntf.domino.types,
  org.openntf.domino.utils,
  org.openntf.domino.utils.xml,
- org.osgi.framework;version="1.3.0"
+ org.osgi.framework
 Bundle-ActivationPolicy: lazy
-Require-Bundle: com.ibm.xsp.designer,
- org.eclipse.equinox.http.registry,
- com.ibm.notes.java.api;bundle-version="8.5.3",
- com.ibm.xsp.domino
+Require-Bundle: org.eclipse.equinox.http.registry,
+ com.ibm.xsp.domino,
+ com.ibm.xsp.designer
 Bundle-ClassPath: lib/commons-io-2.4.jar,
  lib/js.jar,
  lib/slf4j-api-1.7.7.jar,
