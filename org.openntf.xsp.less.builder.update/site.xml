@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
+   <description name="XSP LESS">
+      A LESS Builder plugin for Domino Designer.
+   </description>
    <feature url="features/org.openntf.xsp.less.builder.feature_1.0.0.201406191720.jar" id="org.openntf.xsp.less.builder.feature" version="1.0.0.201406191720"/>
 </site>
